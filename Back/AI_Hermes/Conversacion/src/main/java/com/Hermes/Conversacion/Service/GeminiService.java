@@ -2,6 +2,8 @@ package com.Hermes.Conversacion.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
@@ -13,7 +15,9 @@ import java.util.Scanner;
 @Service
 public class GeminiService {
 
-    private static final String API_KEY = "AIzaSyAoCjYgs4n77MVikqaJJJmDER52vjhH0ZY"; // Tu API Key
+    private static final Logger logger = LoggerFactory.getLogger(GeminiService.class);
+
+    private static final String API_KEY = "AIzaSyAoCjYgs4n77MVikqaJJJmDER52vjhH0ZY";
     private static final String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY;
 
     public String generarContenido(String textoPrompt) {
@@ -56,7 +60,7 @@ public class GeminiService {
             return partes.get(0).path("text").asText();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error al conectarse a Gemini", e);
             return "Error al conectarse a Gemini: " + e.getMessage();
         }
     }
