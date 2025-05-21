@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interacción por Voz | Elliot IA</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f9fc;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .contenedor-voz {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .avatar-voz {
+            width: 200px;
+            height: 200px;
+            margin: 30px auto;
+            background-color: #e3f2fd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 5px solid #4CAF50;
+            animation: pulse 2s infinite;
+        }
+        
+        .avatar-voz img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .btn-voz {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+        }
+        
+        .btn-voz:hover {
+            background-color: #3e8e41;
+            transform: scale(1.05);
+        }
+        
+        .btn-voz.escuchando {
+            background-color: #f44336;
+            animation: pulse 1s infinite;
+        }
+        
+        .transcripcion {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            min-height: 100px;
+            text-align: left;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .volver-btn {
+            display: inline-block;
+            margin-top: 20px;
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #4CAF50;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+        
+        .volver-btn:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor-voz">
+        <h1>Interacción por Voz con Elliot IA</h1>
+        <p>Presiona el botón y habla sobre tus intereses académicos</p>
+        
+        <div class="avatar-voz">
+            <img src="images/avatar-voice.png" alt="Asistente virtual Elliot IA">
+        </div>
+        
+        <button id="btnMicrofono" class="btn-voz">
+            🎤 Presiona para hablar
+        </button>
+        
+        <div class="transcripcion" id="transcripcion">
+            <p id="texto-transcripcion">Di algo como: "Me gustan las matemáticas y programar"</p>
+        </div>
+        
+        <a href="index.html" class="volver-btn">← Volver al inicio</a>
+    </div>
+
+    <script>
+        // Elementos del DOM
+        const btnMicrofono = document.getElementById('btnMicrofono');
+        const textoTranscripcion = document.getElementById('texto-transcripcion');
+        
+        // Verificar compatibilidad
+        if ('webkitSpeechRecognition' in window) {
+            const recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'es-ES';
+            
+            recognition.onstart = function() {
+                btnMicrofono.classList.add('escuchando');
+                textoTranscripcion.textContent = "Escuchando... Habla ahora";
+            };
+            
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                
+                textoTranscripcion.innerHTML = finalTranscript || interimTranscript;
+                
+                // Procesar cuando se detecte frase final
+                if (finalTranscript) {
+                    procesarConsulta(finalTranscript);
+                }
+            };
+            
+            recognition.onerror = function(event) {
+                console.error('Error:', event.error);
+                textoTranscripcion.textContent = "Error: " + event.error;
+                btnMicrofono.classList.remove('escuchando');
+            };
+            
+            recognition.onend = function() {
+                btnMicrofono.classList.remove('escuchando');
+            };
+            
+            btnMicrofono.addEventListener('click', function() {
+                if (btnMicrofono.classList.contains('escuchando')) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            });
+            
+        } else {
+            btnMicrofono.disabled = true;
+            textoTranscripcion.textContent = "El reconocimiento de voz no es compatible con tu navegador. Prueba con Chrome o Edge.";
+        }
+        
+        function procesarConsulta(consulta) {
+            // Convertir a minúsculas para comparación
+            const consultaLower = consulta.toLowerCase();
+            
+            // Ejemplo de lógica de recomendación
+            let recomendacion = "";
+            
+            if (consultaLower.includes('matemáticas') || consultaLower.includes('números')) {
+                recomendacion = "Ingeniería de Software, Matemáticas o Física";
+            } else if (consultaLower.includes('medicina') || consultaLower.includes('salud')) {
+                recomendacion = "Medicina, Enfermería o Biología";
+            } else if (consultaLower.includes('derecho') || consultaLower.includes('leyes')) {
+                recomendacion = "Derecho, Ciencias Políticas o Relaciones Internacionales";
+            } else {
+                recomendacion = "explorar todas nuestras carreras universitarias";
+            }
+            
+            setTimeout(() => {
+                textoTranscripcion.innerHTML += `<br><br><strong>Recomendación:</strong> Te sugerimos ${recomendacion}.`;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
