@@ -41,7 +41,7 @@ header{
 }
 
 .logo h1{
-    color: rgba(255, 174, 0);
+    color: rgb(0, 221, 255);
 }
 
 .nav-menu {
@@ -75,7 +75,7 @@ header{
 
 .corpus-txt h1 {
     font-family: "Pacifico", cursive;
-    color: rgba(255, 174, 0);
+    color: rgb(0, 221, 255);
     font-size: 80px;
     margin-bottom: 20px;
 }
@@ -91,7 +91,7 @@ header{
     margin-top: 40px;
     width: 200px;
     padding: 10px;
-    background-color: rgba(255, 174, 0);
+    background-color: rgb(0, 221, 255);
     border: transparent;
     font-size: 20px;
     font-weight: 800;
@@ -154,15 +154,15 @@ header{
 }
 
 .img1 {
-    background-image: url(Media/cuy.jpg);
+    background-image: url(Media/ucc.jpg);
     background-size: cover;
     width: 250px;
     height: 250px;
-    border-radius: 50%;
+    border-radius: 100%;
 }
 
-.img2 {
-    background-image: url(Media/guaicoso.jpg);
+.img {
+    background-image: url(Media/cas.jpg);
     background-size: cover;
     width: 250px;
     height: 250px;
@@ -189,7 +189,7 @@ header{
 }
 
 .presentacion h2 {
-    color: rgba(255, 174, 0);
+    color: rgba(0, 221, 255);
     font-family: "Pacifico", cursive;
     font-size: 50px;
     margin-bottom: 40px;
@@ -197,6 +197,8 @@ header{
 
 .presentacion-interno {
     display: flex;
+    justify-content: flex-start;
+    align-items: center; 
     width: 1200px;
 }
 
@@ -213,7 +215,9 @@ header{
     padding: 30px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: center; 
+    align-items: flex-start; 
+    text-align: left;
     height: 500px;
 }
 
@@ -221,7 +225,7 @@ header{
     font-family: "Pacifico", cursive;
     line-height: 60px;
     font-size: 50px;
-    color: rgba(255, 174, 0);
+    color: rgb(0, 221, 255);
     margin: 0;
 }
 
@@ -229,6 +233,8 @@ header{
    margin-top: 20px;
    width: 500px;
    color: white; 
+   align-items: flex-start; /* Cambiado de center a flex-start */
+    text-align: left;
 }
 
  .txt-presentacion button {
@@ -240,6 +246,6 @@ header{
     width: 200px;
     padding: 20px;
     color: black;
-    background-color: rgba(255, 174, 0);
+    background-color: rgba(0, 221, 255);
  }
 
