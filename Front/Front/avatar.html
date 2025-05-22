@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interacción por Voz | Elliot IA</title>
-    <style>
+    <link rel="stylesheet" href="style.css"> <style>
+        /* Estilos específicos para esta página que no están en style.css */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f5f9fc;
@@ -23,34 +24,11 @@
             text-align: center;
         }
         
-        .avatar-voz {
-            width: 200px;
-            height: 200px;
-            margin: 30px auto;
-            background-color: #e3f2fd;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border: 5px solid #4CAF50;
-            animation: pulse 2s infinite;
-        }
-        
-        .avatar-voz img {
-            width: 80%;
-            height: 80%;
-            object-fit: contain;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
+        /* NOTA: .avatar-voz se ha eliminado porque estamos usando .avatar-container/.avatar */
+        /* Si quieres el pulso en el avatar general, usa las clases del nuevo avatar */
         
         .btn-voz {
-            background-color: #4CAF50;
+            background-color: #ffffff;
             color: white;
             border: none;
             padding: 15px 30px;
@@ -104,21 +82,50 @@
         <h1>Interacción por Voz con Elliot IA</h1>
         <p>Presiona el botón y habla sobre tus intereses académicos</p>
         
-
-        
+        <div class="avatar-container">
+            <div class="avatar">
+                <div class="avatar-face">
+                    <div class="eyes">
+                        <div class="eye left-eye"></div>
+                        <div class="eye right-eye"></div>
+                    </div>
+                    <div class="mouth"></div>
+                </div>
+            </div>
+        </div>
         <button id="btnMicrofono" class="btn-voz">
-            🎤 
-        </button>
-        
-        <div class="transcripcion" id="transcripcion">
-            <p id="texto-transcripcion">Preguntas frecuentes:</p>
-            <p>
-                ¿Qué carrera estudiar? <br>
-                ¿Cuánto dura la carrera de medicina? <br>
-                ¿Qué materias tiene ingeniería de software? <br>
-                ¿Cuál es el costo de la carrera de derecho? <br>
-                ¿Qué habilidades necesito para estudiar biología? <br>
-            </p>
+    <img src="Media/microfono.png" alt="Icono de micrófono" class="icono-microfono-personalizado">
+</button>
+       <div class="preguntas-frecuentes">
+            <h3>Explora temas de interés:</h3>
+            <ul class="lista-preguntas">
+                <li>
+                    <i class="icono-pregunta"></i>
+                    <button class="btn-pregunta">¿Qué carrera estudiar?</button>
+                </li>
+                <li>
+                    <i class="icono-pregunta"></i>
+                    <button class="btn-pregunta">¿Cuánto dura la carrera de medicina?</button>
+                </li>
+                <li>
+                    <i class="icono-pregunta"></i>
+                    <button class="btn-pregunta">¿Qué materias tiene ingeniería de software?</button>
+                </li>
+                <li>
+                    <i class="icono-pregunta"></i>
+                    <button class="btn-pregunta">¿Cuál es el costo de la carrera de derecho?</button>
+                </li>
+                <li>
+                    <i class="icono-pregunta"></i>
+                    <button class="btn-pregunta">¿Qué habilidades necesito para estudiar biología?</button>
+                </li>
+                <li>
+                    <a href="#" class="ver-mas">Ver más temas...</a>
+                </li>
+            </ul>
+            <div id="transcripcion" class="respuesta-ia">
+                <p id="texto-transcripcion"></p>
+            </div>
         </div>
         
         <a href="index.html" class="volver-btn">← Volver al inicio</a>
@@ -128,17 +135,40 @@
         // Elementos del DOM
         const btnMicrofono = document.getElementById('btnMicrofono');
         const textoTranscripcion = document.getElementById('texto-transcripcion');
+        const avatar = document.querySelector('.avatar'); // Referencia al contenedor principal del avatar
+        const mouth = document.querySelector('.mouth');   // Referencia a la boca del avatar
         
+        // Función para que el avatar hable (simulación)
+        function avatarHablando() {
+            avatar.classList.remove('listening'); // El avatar no está escuchando si está hablando
+            mouth.style.animation = 'talking 0.5s infinite'; // Inicia la animación de hablar
+        }
+
+        // Función para que el avatar escuche o esté en reposo
+        function avatarEscuchando() {
+            avatar.classList.add('listening'); // El avatar está en modo escucha (si aplica una animación para eso)
+            mouth.style.animation = 'listening 1.5s infinite'; // Anima la boca como si estuviera esperando
+        }
+
+        // Función para que el avatar esté en reposo (cuando nadie habla)
+        function avatarReposo() {
+            avatar.classList.remove('listening');
+            mouth.style.animation = 'none'; // Detiene cualquier animación de la boca
+            mouth.style.height = '10px'; // Restaura la altura base de la boca
+            mouth.style.borderRadius = '20px'; // Restaura el border-radius
+        }
+
         // Verificar compatibilidad
         if ('webkitSpeechRecognition' in window) {
             const recognition = new webkitSpeechRecognition();
-            recognition.continuous = true;
+            recognition.continuous = false; // Cambiado a false para que se detenga después de una frase
             recognition.interimResults = true;
             recognition.lang = 'es-ES';
             
             recognition.onstart = function() {
                 btnMicrofono.classList.add('escuchando');
                 textoTranscripcion.textContent = "Escuchando... Habla ahora";
+                avatarEscuchando(); // El avatar escucha cuando el micrófono está activo
             };
             
             recognition.onresult = function(event) {
@@ -158,6 +188,7 @@
                 
                 // Procesar cuando se detecte frase final
                 if (finalTranscript) {
+                    recognition.stop(); // Detenemos la escucha del usuario para que la IA "hable"
                     procesarConsulta(finalTranscript);
                 }
             };
@@ -166,15 +197,20 @@
                 console.error('Error:', event.error);
                 textoTranscripcion.textContent = "Error: " + event.error;
                 btnMicrofono.classList.remove('escuchando');
+                avatarReposo(); // El avatar vuelve a reposo en caso de error
             };
             
             recognition.onend = function() {
+                // Cuando el micrófono deja de escuchar al usuario
                 btnMicrofono.classList.remove('escuchando');
+                // No llamamos a avatarReposo() aquí directamente porque la IA podría estar a punto de hablar.
+                // Se controlará después de que la IA termine de "hablar".
             };
             
             btnMicrofono.addEventListener('click', function() {
                 if (btnMicrofono.classList.contains('escuchando')) {
                     recognition.stop();
+                    avatarReposo(); // Vuelve a reposo si se detiene manualmente
                 } else {
                     recognition.start();
                 }
@@ -183,13 +219,14 @@
         } else {
             btnMicrofono.disabled = true;
             textoTranscripcion.textContent = "El reconocimiento de voz no es compatible con tu navegador. Prueba con Chrome o Edge.";
+            avatarReposo(); // Avatar en reposo si no hay soporte de voz
         }
         
         function procesarConsulta(consulta) {
-            // Convertir a minúsculas para comparación
+            // El usuario ha terminado de hablar, ahora la IA "hablará"
+            avatarHablando(); 
+
             const consultaLower = consulta.toLowerCase();
-            
-            // Ejemplo de lógica de recomendación
             let recomendacion = "";
             
             if (consultaLower.includes('matemáticas') || consultaLower.includes('números')) {
@@ -202,10 +239,15 @@
                 recomendacion = "explorar todas nuestras carreras universitarias";
             }
             
+            // Simula el tiempo que la IA tarda en responder
             setTimeout(() => {
                 textoTranscripcion.innerHTML += `<br><br><strong>Recomendación:</strong> Te sugerimos ${recomendacion}.`;
-            }, 1000);
+                avatarReposo(); // La IA termina de "hablar", el avatar vuelve a reposo
+            }, 3000); // La IA "habla" durante 3 segundos
         }
+
+        // Inicializar el avatar en reposo al cargar la página
+        avatarReposo();
     </script>
 </body>
 </html>
