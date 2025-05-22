@@ -315,66 +315,24 @@ footer {
     }
 }
 
-/* ESTILOS GLOBALES - ASEGURA QUE EL HTML Y EL BODY NO TENGAN MÁRGENES/PADDING IMPLÍCITOS */
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%; /* Asegura que el body ocupe toda la altura disponible */
-    width: 100%; /* Asegura que el body ocupe todo el ancho disponible */
-    display: flex; /* Usamos flexbox en el body para centrar su contenido */
-    flex-direction: column; /* Organiza los elementos en columna */
-    align-items: center; /* Centra horizontalmente los elementos hijos */
-    justify-content: flex-start; /* Alinea los elementos al inicio de la columna */
-    background-color: #f5f9fc; /* Mantenemos el color de fondo */
-    font-family: 'Arial', sans-serif;
-    color: #333;
-}
-
-/* CONTENEDOR PRINCIPAL - .contenedor-voz */
-.contenedor-voz {
-    max-width: 800px;
-    width: 90%; /* Usamos un ancho porcentual para mayor adaptabilidad */
-    margin: 40px auto; /* Centrado horizontalmente y margen superior/inferior */
-    padding: 30px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    text-align: center; /* Centra el texto y elementos inline/inline-block dentro */
-    display: flex; /* Usamos flexbox para organizar los elementos internos (avatar, botón, etc.) */
-    flex-direction: column; /* Los apila verticalmente */
-    align-items: center; /* Centra horizontalmente los elementos hijos (avatar, botón) */
-}
-
-/* BOTÓN DEL MICRÓFONO - .btn-voz */
+/* Primero, vamos a revisar y consolidar los estilos del botón si es necesario */
 .btn-voz {
     background-color: #4CAF50;
-    color: rgb(0, 0, 0);
+    color: white;
     border: none;
-    padding: 0; /* Lo ponemos en 0 para que width/height controlen el tamaño */
-    border-radius: 50%; /* Asegura que sea redondo */
+    padding: 15px 30px; /* Ajusta este padding si el tamaño del ícono ya lo hace muy grande */
+    border-radius: 50px;
     cursor: pointer;
     transition: all 0.3s;
-    
-    display: flex; /* Importante para centrar la imagen PNG dentro del botón */
-    align-items: center; /* Centra verticalmente la imagen PNG */
-    justify-content: center; /* Centra horizontalmente la imagen PNG */
-    
-    width: 80px; /* Tamaño del botón */
+    margin: 20px auto; /* Esto es clave para centrarlo horizontalmente */
+    display: flex; /* Para centrar el contenido (la imagen) */
+    align-items: center; /* Centra verticalmente la imagen */
+    justify-content: center; /* Centra horizontalmente la imagen */
+    width: 80px; /* ¡Haz el botón más grande! Ajusta este valor */
     height: 80px; /* Mismo tamaño para que sea circular */
-    margin: 20px auto; /* Centra horizontalmente el botón dentro de .contenedor-voz */
-    overflow: hidden; /* Para que la imagen no se salga si es muy grande */
+    border-radius: 50%; /* Lo hace redondo si no lo era ya */
 }
 
-/* Asegúrate de que los márgenes del avatar sean consistentes también */
-.avatar-container {
-    width: 200px;
-    height: 200px;
-    margin: 30px auto 20px auto; /* Centrado y con margen inferior para separar del botón */
-    position: relative;
-    animation: pulse 2s infinite;
-}
-
-/* El resto de tus estilos para el botón y el ícono permanecen igual */
 .btn-voz:hover {
     background-color: #3e8e41;
     transform: scale(1.05);
@@ -385,17 +343,18 @@ html, body {
     animation: pulse 1s infinite;
 }
 
+/* Estilos para tu imagen PNG de micrófono dentro del botón */
 .icono-microfono-personalizado {
-    width: 60px;   /* Tamaño de la imagen dentro del botón */
+    width: 60px;   /* ¡Haz la imagen más grande! Ajusta este valor */
     height: 60px;  /* Mantén la proporción */
     object-fit: contain;
     display: block;
-    filter: brightness(0) invert(1);
     transition: transform 0.3s ease;
 }
 
+/* Opcional: Si quieres que el icono cambie al hacer hover en el botón */
 .btn-voz:hover .icono-microfono-personalizado {
-    transform: scale(1.05);
+    transform: scale(1.05); /* Un poco más sutil ya que el botón ya se agranda */
 }
 
 /* Asegúrate de que .avatar-container tenga un margin-bottom si el botón está muy pegado */
