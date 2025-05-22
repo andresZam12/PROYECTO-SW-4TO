@@ -10,6 +10,13 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
+	<repositories>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/google/generative-ai-java</url>
+		</repository>
+	</repositories>
+
 	<groupId>com.university</groupId>
 	<artifactId>educationPackage</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -17,10 +24,50 @@
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
-		<java.version>17</java.version>
+		<java.version>24</java.version>
 	</properties>
 
 	<dependencies>
+
+		<!-- Spring Security (para endpoints protegidos) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<!-- WebSockets (para comunicación en tiempo real con avatares) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+
+		<!-- Google Cloud Text-to-Speech (síntesis de voz) -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-texttospeech</artifactId>
+			<version>2.34.0</version>
+		</dependency>
+
+		<!-- Google Generative AI (Gemini) -->
+		<dependency>
+			<groupId>com.google.ai</groupId>
+			<artifactId>generativeai-java</artifactId>
+			<version>0.5.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.sound</groupId>
+			<artifactId>javax.sound-api</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+
+		<!-- Apache Commons IO (utilidades para audio) -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.16.1</version>
+		</dependency>
+
 		<!-- Spring Data JPA -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
