@@ -4,7 +4,7 @@ public class Role {
     private Long id;
     private String name;
 
-    // Getters y setters (opcional)
+    
     public Long getId() {
         return id;
     }
