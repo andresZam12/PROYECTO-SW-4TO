@@ -1,251 +1,365 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
-*{
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+a {
     text-decoration: none;
+    color: inherit;
+}
+
+li {
     list-style: none;
 }
 
-body{
-    width: 100%;
-    font-family: "Poppins", serif;
+button {
+    cursor: pointer;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s;
 }
 
-header{
-    width: 100%;
-    height: 100vh;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    url("Media/ucc.jpg");
-    background-size: cover;
-    background-position: center;
+button:hover {
+    background-color: #45a049;
 }
 
-.header{
-    box-sizing: border-box;
-    padding: 0 10%;
-    width: 100%;
-    height: 10vh;
+
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 20px 0;
+}
+
+.header {
     display: flex;
     justify-content: space-between;
-    background-color: rgba(0, 0, 0, 0.603);
-}
-
-.logo{
-    display: flex;
     align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-.logo h1{
-    color: rgb(0, 221, 255);
+.logo h1 {
+    font-size: 2rem;
+    color: #4CAF50;
 }
 
 .nav-menu {
     display: flex;
-    
-}
-
-.nav-menu li{
-    margin: 0 20px;
-    display: flex;
-    align-items: center;
+    gap: 20px;
 }
 
 .nav-menu li a {
-    color: white;
+    padding: 10px 15px;
+    transition: color 0.3s;
 }
 
-.corpus{
-    width: 100%;
-    height: 90vh;
-    padding: 0 10%;
+.nav-menu li a:hover {
+    color: #4CAF50;
+}
+
+
+.corpus {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 0 20px;
 }
 
 .corpus-txt {
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex: 1;
+    padding-right: 40px;
 }
 
 .corpus-txt h1 {
-    font-family: "Pacifico", cursive;
-    color: rgb(0, 221, 255);
-    font-size: 80px;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #4CAF50;
+}
+
+.corpus-txt p {
     margin-bottom: 20px;
 }
 
-.corpus-txt p{
-    color: white;
-    width: 500px;
-    font-size: 20px;
-}
-
-.corpus-txt button{
-    font-family: "Poppins", serif;
-    margin-top: 40px;
-    width: 200px;
-    padding: 10px;
-    background-color: rgb(0, 221, 255);
-    border: transparent;
-    font-size: 20px;
-    font-weight: 800;
-}
-
-.corpus-img {
-    width: 50%;
-}
-
-.menu{
-    box-sizing: border-box;
-    width: 100%;
-    padding: 0 10%;
-     margin: 15px 0;
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-}
-
-.menu h2{
-    font-family: "Pacifico", cursive;
-    font-size: 50px;
-    text-align: center;
-    margin: 20px 0;
-}
-
-.menu p{
-    width: 600px;
-    text-align: center;
-    margin-bottom: 60px;
-    font-size: 20px;
-}
-
-.platos {
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-}
-
-
-.platos h3{
-    font-size: 20px;
-}
-
-.platillos{
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.platillos h3{
-    font-family: "Pacifico", cursive;
-    text-align: center;
-}
-
-.platillos p{
-    text-align: center;
-    justify-content: space-around;
-}
-
-.img1 {
+.img {
+    flex: 1;
+    height: 400px;
+    background-color: #ddd;
+    border-radius: 10px;
     background-image: url(Media/ucc.jpg);
     background-size: cover;
-    width: 250px;
-    height: 250px;
-    border-radius: 100%;
+    background-position: center;
 }
 
-.img {
-    background-image: url(Media/cas.jpg);
-    background-size: cover;
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.img3 {
-    background-image: url(Media/guaicoso.jpg);
-    background-size: cover;
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
+.informacion {
+    margin: 50px 0;
+    text-align: center;
 }
+
+.informacion h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
 
 .presentacion {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    width: 100%;
-    padding: 70px 10%;
-    background-color: rgb(41, 41, 41);
+    margin: 60px 0;
 }
 
 .presentacion h2 {
-    color: rgba(0, 221, 255);
-    font-family: "Pacifico", cursive;
-    font-size: 50px;
-    margin-bottom: 40px;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2c3e50;
 }
 
 .presentacion-interno {
     display: flex;
-    justify-content: flex-start;
-    align-items: center; 
-    width: 1200px;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 40px;
 }
+
 
 .img-presentacion {
-    width: 50%;
-    height: 500px;
-    display: flex;
-    justify-content: center;
+    flex: 1;
 }
 
+.img-software {
+    height: 300px;
+    background-color: #ddd;
+    border-radius: 10px;
+    background-image: url(Media/cas.jpg);
+    background-size: cover;
+    background-position: center;
+}
+
+.img-medicina {
+    height: 300px;
+    background-color: #ddd;
+    border-radius: 10px;
+    background-image: url(Media/medicina.jpg);
+    background-size: cover;
+    background-position: center;
+}
+.img-derecho {
+    height: 300px;
+    background-color: #ddd;
+    border-radius: 10px;
+    background-image: url(Media/derecho.jpg);
+    background-size: cover;
+    background-position: center;
+}
+.img-industrial {
+    height: 300px;
+    background-color: #ddd;
+    border-radius: 10px;
+    background-image: url(Media/industrial.jpg);
+    background-size: cover;
+    background-position: center;
+}
 .txt-presentacion {
-    width: 50%;
-    box-sizing: border-box;
-    padding: 30px;
+    flex: 1;
+}
+
+.txt-presentacion h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    text-align: left;
+}
+
+.txt-presentacion p {
+    margin-bottom: 20px;
+}
+
+
+footer {
+    background-color: #2c3e50;
+    color: white;
+    padding: 50px 0;
+}
+
+.footer-contain {
     display: flex;
-    flex-direction: column;
-    justify-content: center; 
-    align-items: flex-start; 
-    text-align: left;
-    height: 500px;
+    justify-content: space-between;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding:0 20px;
+    gap: 80px;
 }
 
-.txt-presentacion h2{
-    font-family: "Pacifico", cursive;
-    line-height: 60px;
-    font-size: 50px;
-    color: rgb(0, 221, 255);
-    margin: 0;
+.footer-contain div {
+    flex: 1;
 }
 
-.txt-presentacion p{
-   margin-top: 20px;
-   width: 500px;
-   color: white; 
-   align-items: flex-start; /* Cambiado de center a flex-start */
-    text-align: left;
+.footer-contain h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #4CAF50;
 }
 
- .txt-presentacion button {
-    font-size: 15px;
-    font-weight: 800;
-    font-family: "Poppins", serif;
-    border-color: transparent;
+
+.redes-sociales {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
     margin-top: 20px;
-    width: 200px;
-    padding: 20px;
-    color: black;
-    background-color: rgba(0, 221, 255);
- }
+}
 
+
+[class^="icono-"] {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background-color: #eee;
+    border-radius: 50%;
+    background-size: 60%;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: all 0.3s;
+}
+
+[class^="icono-"]:hover {
+    transform: scale(1.1);
+    
+}
+
+
+.icono-whatsapp {
+    background-image: url(Media/whatsapp.png);
+    background-color: #25D366; 
+}
+
+.icono-instagram {
+    background-image: url(Media/instagram.png);
+    background-color: #E1306C; 
+}
+
+.icono-facebook {
+    background-image: url(Media/facebook.png);
+    background-color: #1877F2; 
+}
+
+.icono-email {
+    background-image: url(Media/envelope.png);
+    background-color: #EA4335; 
+}
+
+.icono-telefono {
+    background-image: url(Media/phone-call.png);
+    background-color: #34B7F1; 
+}
+
+
+.icono-pagina {
+    background-image: url(Media/ucc.png);
+    background-color: #f9f9fa;
+}
+
+
+[class^="icono-"] {
+
+    background-size: 50%; 
+}
+
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .corpus {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .corpus-txt {
+        padding-right: 0;
+        margin-bottom: 30px;
+    }
+    
+    .presentacion-interno {
+        flex-direction: column;
+    }
+    
+    .footer-contain {
+        flex-direction: column;
+    }
+    
+    .img, .img-plato {
+        width: 100%;
+    }
+}
+
+/* Contenedor del botón */
+.btn-microfono {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    padding: 15px;
+    transition: all 0.3s;
+    position: relative; /* Importante para posicionamiento */
+    overflow: hidden; /* Evita que el ícono se salga */
+}
+
+/* Ícono del micrófono - Control de tamaño garantizado */
+.icono-micro {
+    width: 10px; /* Tamaño fijo */
+    height: 40px;
+    object-fit: contain;
+    display: block;
+    transition: all 0.3s;
+    filter: brightness(0) invert(1); /* Convierte a blanco */
+}
+
+/* Estados interactivos */
+.btn-microfono:hover {
+    transform: scale(1.1);
+    background-color: #3e8e41;
+}
+
+.btn-microfono:hover .icono-micro {
+    transform: scale(1.2);
+}
+
+.btn-microfono.escuchando {
+    background-color: #f44336;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}

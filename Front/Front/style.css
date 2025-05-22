@@ -314,3 +314,52 @@ footer {
         width: 100%;
     }
 }
+
+/* Contenedor del botón */
+.btn-microfono {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    padding: 15px;
+    transition: all 0.3s;
+    position: relative; /* Importante para posicionamiento */
+    overflow: hidden; /* Evita que el ícono se salga */
+}
+
+/* Ícono del micrófono - Control de tamaño garantizado */
+.icono-micro {
+    width: 10px; /* Tamaño fijo */
+    height: 40px;
+    object-fit: contain;
+    display: block;
+    transition: all 0.3s;
+    filter: brightness(0) invert(1); /* Convierte a blanco */
+}
+
+/* Estados interactivos */
+.btn-microfono:hover {
+    transform: scale(1.1);
+    background-color: #3e8e41;
+}
+
+.btn-microfono:hover .icono-micro {
+    transform: scale(1.2);
+}
+
+.btn-microfono.escuchando {
+    background-color: #f44336;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
