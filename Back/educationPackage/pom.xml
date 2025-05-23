@@ -10,13 +10,6 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<repositories>
-		<repository>
-			<id>github</id>
-			<url>https://maven.pkg.github.com/google/generative-ai-java</url>
-		</repository>
-	</repositories>
-
 	<groupId>com.university</groupId>
 	<artifactId>educationPackage</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -45,20 +38,22 @@
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-texttospeech</artifactId>
-			<version>2.34.0</version>
+			<version>2.22.0</version>
 		</dependency>
 
-		<!-- Google Generative AI (Gemini) -->
+		<!-- Google Generative AI (Gemini)
 		<dependency>
 			<groupId>com.google.ai</groupId>
 			<artifactId>generativeai-java</artifactId>
 			<version>0.5.0</version>
 		</dependency>
+		-->
 
+		<!-- Google Cloud Speech-to-Text -->
 		<dependency>
-			<groupId>javax.sound</groupId>
-			<artifactId>javax.sound-api</artifactId>
-			<version>1.0.1</version>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-speech</artifactId>
+			<version>4.22.0</version>
 		</dependency>
 
 		<!-- Apache Commons IO (utilidades para audio) -->
@@ -94,6 +89,12 @@
 			<optional>true</optional>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-vertexai</artifactId>
+			<version>1.20.1</version>
+		</dependency>
+
 		<!-- MySQL Connector -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -109,6 +110,19 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/google/generative-ai-java</url>
+		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+		</repository>
+	</repositories>
 
 	<build>
 		<plugins>
