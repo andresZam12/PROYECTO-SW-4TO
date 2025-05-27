@@ -10,14 +10,24 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/avatar-websocket")
+        registry.addEndpoint("/voice-ws")
                 .setAllowedOriginPatterns("*")
-                .withSockJS();
+                .withSockJS();  // Opcional: Si usas SockJS en el cliente
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/topic");  // Para respuestas
+        registry.setApplicationDestinationPrefixes("/app");  // Para enviar prompts
+    }
+
+
+
+    // Opcional: Configurar límites de tamaño de mensajes
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration.setMessageSizeLimit(2 * 1024 * 1024); // 2MB para chunks WebM
+        registration.setSendBufferSizeLimit(2 * 1024 * 1024);
+        // Mantener el resto de configs existentes
     }
 }

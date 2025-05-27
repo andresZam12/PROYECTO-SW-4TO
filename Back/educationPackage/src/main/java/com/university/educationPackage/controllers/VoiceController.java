@@ -3,52 +3,112 @@ package com.university.educationPackage.controllers;
 import com.university.educationPackage.services.voice.SpeechToTextService;
 import com.university.educationPackage.services.voice.TextToSpeechService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
-@RestController
-@RequestMapping("/api/voice")
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+@Controller
 public class VoiceController {
 
     private final SpeechToTextService sttService;
     private final TextToSpeechService ttsService;
+    private static final int MAX_AUDIO_SIZE_MB = 2; // 2MB para WebM/Opus
 
     @Autowired
-    public VoiceController(SpeechToTextService sttService, TextToSpeechService ttsService) {
+    public VoiceController(SpeechToTextService sttService,
+                           TextToSpeechService ttsService) {
         this.sttService = sttService;
         this.ttsService = ttsService;
     }
 
-    @PostMapping(value = "/ask", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> handleVoiceQuery(@RequestParam("audio") MultipartFile audioFile) {
+    @MessageMapping("/voice/ask")
+    @SendToUser("/queue/voice-response")
+    public byte[] handleVoiceQuery(byte[] audioData, SimpMessageHeaderAccessor headerAccessor) {
         try {
-            // 1. Convertir voz a texto (audio → texto)
-            String userQuestion = sttService.convertVoiceToText(audioFile);
+            validateAudioData(audioData);
 
-            // 2. Obtener respuesta de la IA (integrado con Gemini AI)
-            String aiTextResponse = getAIResponse(userQuestion); // Método que integra con tu IA
+            MultipartFile audioFile = createAudioFile(audioData);
+            String userQuestion = processSpeechToText(audioFile);
+            String aiResponse = generateAIResponse(userQuestion);
 
-            // 3. Convertir texto a voz (texto → audio)
-            byte[] audioResponse = ttsService.convertTextToSpeech(aiTextResponse);
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .header("Content-Disposition", "attachment; filename=\"response.mp3\"")
-                    .body(audioResponse);
+            return convertTextToSpeech(aiResponse);
 
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return createErrorResponse("Validation error: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            return createErrorResponse("Processing error: " + e.getMessage());
         }
     }
 
-    private String getAIResponse(String userQuestion) throws Exception {
-        // TODO: Integrar con tu servicio de Gemini AI existente
-        // Ejemplo:
-        // return geminiService.generateResponse(userQuestion);
-        return "Respuesta generada por la IA para: " + userQuestion;
+    // Métodos auxiliares mejor estructurados
+    private void validateAudioData(byte[] audioData) {
+        if (audioData == null || audioData.length == 0) {
+            throw new IllegalArgumentException("Audio data cannot be empty");
+        }
+
+        if (audioData.length > MAX_AUDIO_SIZE_MB * 1024 * 1024) {
+            throw new IllegalArgumentException(String.format(
+                    "Audio exceeds maximum size of %dMB", MAX_AUDIO_SIZE_MB));
+        }
+    }
+
+    private MultipartFile createAudioFile(byte[] audioData) {
+        return new ByteArrayMultipartFile(
+                audioData,
+                "voice-message",
+                "voice-message.webm",
+                "audio/webm; codecs=opus"  // Especificación clara del codec
+        );
+    }
+
+    private String processSpeechToText(MultipartFile audioFile) throws Exception {
+        return sttService.convertVoiceToText(audioFile);
+    }
+
+    private String generateAIResponse(String userQuestion) throws Exception {
+        // TODO: Integrar con tu servicio de IA
+        return "Respuesta generada para: " + userQuestion;
+    }
+
+    private byte[] convertTextToSpeech(String text) throws Exception {
+        return ttsService.convertTextToSpeech(text);
+    }
+
+    private byte[] createErrorResponse(String errorMessage) {
+        return errorMessage.getBytes();
+    }
+
+    // Clase auxiliar optimizada
+    private static class ByteArrayMultipartFile implements MultipartFile {
+        private final byte[] content;
+        private final String name;
+        private final String originalFilename;
+        private final String contentType;
+
+        public ByteArrayMultipartFile(byte[] content, String name,
+                                      String originalFilename, String contentType) {
+            this.content = content;
+            this.name = name;
+            this.originalFilename = originalFilename;
+            this.contentType = contentType;
+        }
+
+        @Override public String getName() { return name; }
+        @Override public String getOriginalFilename() { return originalFilename; }
+        @Override public String getContentType() { return contentType; }
+        @Override public boolean isEmpty() { return content == null || content.length == 0; }
+        @Override public long getSize() { return content.length; }
+        @Override public byte[] getBytes() { return content; }
+        @Override public ByteArrayInputStream getInputStream() {
+            return new ByteArrayInputStream(content);
+        }
+        @Override public void transferTo(java.io.File dest) throws IOException {
+            new java.io.FileOutputStream(dest).write(content);
+        }
     }
 }

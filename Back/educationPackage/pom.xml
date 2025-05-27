@@ -58,6 +58,25 @@
 		</dependency>
 		-->
 
+		<!-- Para ejecutar FFmpeg -->
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>javacv-platform</artifactId>
+			<version>1.5.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ws.schild</groupId>
+			<artifactId>jave-core</artifactId>
+			<version>3.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ws.schild</groupId>
+			<artifactId>jave-nativebin-win64</artifactId> <!-- Cambiar según OS -->
+			<version>3.3.1</version>
+		</dependency>
+
 		<!-- Google Cloud Speech-to-Text -->
 		<dependency>
 			<groupId>com.google.cloud</groupId>
@@ -85,6 +104,12 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+		<!-- Para validación -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>2.0.1.Final</version>
+		</dependency>
 		<!-- Thymeleaf -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
