@@ -10,12 +10,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<repositories>
-		<repository>
-			<id>github</id>
-			<url>https://maven.pkg.github.com/google/generative-ai-java</url>
-		</repository>
-	</repositories>
+
 
 	<groupId>com.university</groupId>
 	<artifactId>educationPackage</artifactId>
@@ -48,18 +43,8 @@
 			<version>2.34.0</version>
 		</dependency>
 
-		<!-- Google Generative AI (Gemini) -->
-		<dependency>
-			<groupId>com.google.ai</groupId>
-			<artifactId>generativeai-java</artifactId>
-			<version>0.5.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.sound</groupId>
-			<artifactId>javax.sound-api</artifactId>
-			<version>1.0.1</version>
-		</dependency>
+		
+	
 
 		<!-- Apache Commons IO (utilidades para audio) -->
 		<dependency>
@@ -94,11 +79,11 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- MySQL Connector -->
+		<!-- MySQL Connector recomendado -->
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			 <version>8.0.33</version> <!-- Versión añadida -->
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>8.0.33</version>
 			<scope>runtime</scope>
 		</dependency>
 
