@@ -1,11 +1,16 @@
-// src/app/avatar/avatar.component.ts
-
 import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { WebSocketService } from '../services/web-socket.service';
+import { Subscription } from 'rxjs';
 
-declare var webkitSpeechRecognition: any; // Declaración para el reconocimiento de voz
+interface SocketMessage {
+  type: string;
+  text?: string;
+  audio?: string;
+  error?: string;
+}
 
 @Component({
   selector: 'app-avatar',
@@ -15,147 +20,207 @@ declare var webkitSpeechRecognition: any; // Declaración para el reconocimiento
   imports: [CommonModule, RouterModule]
 })
 export class AvatarComponent implements OnInit, OnDestroy {
+  // Elementos del DOM
   btnMicrofono: HTMLButtonElement | null = null;
   textoTranscripcion: HTMLElement | null = null;
   avatar: HTMLElement | null = null;
   mouth: HTMLElement | null = null;
 
-  recognition: any; // Instancia del reconocimiento de voz
+  // Propiedades públicas para la plantilla
+  isRecording = false;
+  isProcessing = false;
+  socketStatus = 'Desconectado';
+
+  // Variables privadas para la lógica
+  private mediaRecorder: MediaRecorder | null = null;
+  private audioChunks: Blob[] = [];
+  private audioContext: AudioContext | null = null;
+  private messageSubscription!: Subscription;
+  private statusSubscription!: Subscription;
 
   constructor(
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object // Para verificar si estamos en el navegador
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private webSocketService: WebSocketService
   ) { }
 
   ngOnInit(): void {
-    // Asegurarse de que el código se ejecute solo en el navegador
     if (isPlatformBrowser(this.platformId)) {
-      // Obtener referencias a los elementos del DOM
-      this.btnMicrofono = document.getElementById('btnMicrofono') as HTMLButtonElement;
-      this.textoTranscripcion = document.getElementById('texto-transcripcion');
-      this.avatar = document.querySelector('.avatar');
-      this.mouth = document.querySelector('.mouth');
+      this.initElements();
+      this.initWebSocket();
+    }
+  }
 
-      this.avatarReposo(); // Poner el avatar en estado de reposo al inicio
+  private initElements(): void {
+    this.btnMicrofono = document.getElementById('btnMicrofono') as HTMLButtonElement;
+    this.textoTranscripcion = document.getElementById('texto-transcripcion');
+    this.avatar = document.querySelector('.avatar');
+    this.mouth = document.querySelector('.mouth');
+    this.avatarReposo();
+  }
 
-      // Verificar si el reconocimiento de voz es compatible con el navegador
-      if ('webkitSpeechRecognition' in window) {
-        this.recognition = new webkitSpeechRecognition();
-        
-        // ****** ¡¡¡ ESTE ES EL CAMBIO CLAVE !!! ******
-        this.recognition.continuous = true; // Permite que el micrófono permanezca abierto hasta que se detenga manualmente
-        // ********************************************
-        
-        this.recognition.interimResults = true; // Mostrar resultados interinos
-        this.recognition.lang = 'es-ES'; // Idioma español de España
+  private initWebSocket(): void {
+    this.webSocketService.connect('wss://tu-backend-api.com/voice-assistant');
 
-        // Evento cuando el reconocimiento de voz comienza
-        this.recognition.onstart = () => {
-          if (this.btnMicrofono) {
-            this.btnMicrofono.classList.add('escuchando'); // Añade la clase 'escuchando' al botón
-          }
-          if (this.textoTranscripcion) this.textoTranscripcion.textContent = "Escuchando... Habla ahora";
-          this.avatarEscuchando(); // Poner el avatar en estado de escucha
-        };
+    this.messageSubscription = this.webSocketService.getMessages().subscribe({
+      next: (message: SocketMessage) => this.handleSocketMessage(message),
+      error: (err: any) => console.error('Error en WebSocket:', err)
+    });
 
-        // Evento cuando se reciben resultados de voz
-        this.recognition.onresult = (event: any) => {
-          let interimTranscript = '';
-          let finalTranscript = '';
+    this.statusSubscription = this.webSocketService.getConnectionStatus().subscribe({
+      next: (status: string) => this.socketStatus = status,
+      error: (err: any) => console.error('Error en estado:', err)
+    });
+  }
 
-          // Recorrer los resultados para obtener la transcripción
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            const transcript = event.results[i][0].transcript;
-            if (event.results[i].isFinal) {
-              finalTranscript += transcript; // Transcripción final
-            } else {
-              interimTranscript += transcript; // Transcripción interina (mientras se habla)
-            }
-          }
+  private handleSocketMessage(message: SocketMessage): void {
+    switch (message.type) {
+      case 'transcription':
+        if (message.text) this.updateTranscription(message.text);
+        break;
+      case 'response':
+        if (message.text && message.audio) this.handleResponse(message.text, message.audio);
+        break;
+      case 'error':
+        if (message.error) this.handleError(message.error);
+        break;
+      default:
+        console.warn('Tipo de mensaje desconocido:', message);
+    }
+  }
 
-          // Mostrar la transcripción en la pantalla
-          if (this.textoTranscripcion) {
-            // Si la transcripción final tiene contenido, lo muestra; si no, muestra la interina
-            this.textoTranscripcion.innerHTML = finalTranscript || interimTranscript;
-          }
+  private updateTranscription(text: string): void {
+    if (this.textoTranscripcion) {
+      this.textoTranscripcion.textContent = text;
+    }
+  }
 
-          // Si hay una transcripción final y el micrófono sigue abierto, puedes decidir qué hacer.
-          // Para que el usuario decida cuándo cerrar, NO detendremos el reconocimiento aquí automáticamente.
-          // La lógica de procesar la consulta se hará con el texto final.
-          if (finalTranscript) {
-              // Si tienes lógica para procesar la consulta solo cuando se termina de hablar (por ejemplo, si finalTranscript es una frase completa)
-              // deberías refinar cómo se procesa o cuándo se detiene.
-              // Por ahora, solo muestra el texto y el usuario sigue controlando el micrófono.
-              console.log("Transcripción final recibida (reconocimiento continuo):", finalTranscript);
-          }
-        };
+  private handleResponse(text: string, audioBase64: string): void {
+    if (this.textoTranscripcion) {
+      this.textoTranscripcion.innerHTML = text;
+    }
+    
+    this.avatarHablando();
+    this.playAudioResponse(audioBase64);
+  }
 
-        // Evento cuando ocurre un error en el reconocimiento de voz
-        this.recognition.onerror = (event: any) => {
-          console.error('Error del reconocimiento de voz:', event.error);
-          if (this.textoTranscripcion) this.textoTranscripcion.textContent = "Error: " + event.error + ". Intenta nuevamente.";
-          if (this.btnMicrofono) {
-            this.btnMicrofono.classList.remove('escuchando'); // Quita la clase 'escuchando' si hay error
-          }
-          this.avatarReposo(); // Volver el avatar a reposo
-        };
+  private playAudioResponse(audioBase64: string): void {
+    if (!this.audioContext) {
+      this.audioContext = new AudioContext();
+    }
 
-        // Evento cuando el reconocimiento de voz termina (por stop() manual o error grave)
-        this.recognition.onend = () => {
-          if (this.btnMicrofono) {
-            this.btnMicrofono.classList.remove('escuchando'); // Quita la clase 'escuchando' cuando termina
-          }
-          // Aquí podríamos querer procesar la última transcripción final si el usuario detuvo manualmente.
-          // Si el texto transcrito actual es un resultado final (y no solo interino), procesarlo.
-          if (this.textoTranscripcion && this.textoTranscripcion.textContent && !this.textoTranscripcion.textContent.includes('Escuchando')) {
-             const finalText = this.textoTranscripcion.textContent;
-             // Si el texto final ya se procesó en onresult con la lógica de finalTranscript, no lo hagas de nuevo.
-             // Si quieres que solo se procese AL DETENER, entonces la lógica de finalTranscript en onresult debería cambiar.
-             // Para simplificar, la lógica de procesarConsulta se hará al obtener una transcripción final.
-          }
-          this.avatarReposo(); // El avatar vuelve a reposo cuando el micrófono se cierra.
-        };
-
-      } else {
-        // Si el reconocimiento de voz no es compatible
-        if (this.btnMicrofono) {
-          this.btnMicrofono.disabled = true; // Deshabilitar el botón
-        }
-        if (this.textoTranscripcion) {
-          this.textoTranscripcion.textContent = "El reconocimiento de voz no es compatible con tu navegador. Prueba con Chrome o Edge.";
-        }
+    const audioData = this.base64ToArrayBuffer(audioBase64);
+    this.audioContext.decodeAudioData(audioData).then((buffer) => {
+      const source = this.audioContext!.createBufferSource();
+      source.buffer = buffer;
+      source.connect(this.audioContext!.destination);
+      source.start(0);
+      
+      source.onended = () => {
         this.avatarReposo();
+        this.isProcessing = false;
+      };
+    }).catch((error: any) => {
+      console.error('Error al reproducir audio:', error);
+      this.avatarReposo();
+      this.isProcessing = false;
+    });
+  }
+
+  private base64ToArrayBuffer(base64: string): ArrayBuffer {
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
+
+  private handleError(error: string): void {
+    console.error('Error del servidor:', error);
+    if (this.textoTranscripcion) {
+      this.textoTranscripcion.textContent = `Error: ${error}`;
+    }
+    this.isProcessing = false;
+    this.avatarReposo();
+  }
+
+  async toggleMicrophone(): Promise<void> {
+    if (this.isRecording) {
+      this.stopRecording();
+    } else {
+      await this.startRecording();
+    }
+  }
+
+  private async startRecording(): Promise<void> {
+    try {
+      this.audioChunks = [];
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      this.mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+
+      this.mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          this.audioChunks.push(event.data);
+        }
+      };
+
+      this.mediaRecorder.onstop = () => {
+        this.sendAudioToBackend();
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      this.mediaRecorder.start(1000);
+      this.isRecording = true;
+      this.isProcessing = true;
+      this.avatarEscuchando();
+      
+      if (this.btnMicrofono) {
+        this.btnMicrofono.classList.add('escuchando');
+      }
+      if (this.textoTranscripcion) {
+        this.textoTranscripcion.textContent = "Escuchando... Habla ahora";
+      }
+    } catch (error: any) {
+      console.error('Error al acceder al micrófono:', error);
+      if (this.textoTranscripcion) {
+        this.textoTranscripcion.textContent = "Error al acceder al micrófono. Asegúrate de permitir el acceso.";
+      }
+      this.isProcessing = false;
+    }
+  }
+
+  private stopRecording(): void {
+    if (this.mediaRecorder && this.isRecording) {
+      this.mediaRecorder.stop();
+      this.isRecording = false;
+      
+      if (this.btnMicrofono) {
+        this.btnMicrofono.classList.remove('escuchando');
       }
     }
   }
 
-  // Limpiar el reconocimiento de voz al destruir el componente
-  ngOnDestroy(): void {
-    if (isPlatformBrowser(this.platformId) && this.recognition) {
-      this.recognition.stop();
-      this.recognition = null;
-    }
+  private sendAudioToBackend(): void {
+    const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm;codecs=opus' });
+    this.webSocketService.send(audioBlob);
   }
 
-  // Método para alternar el estado del micrófono (INICIAR / DETENER)
-  toggleMicrophone(): void {
-    if (isPlatformBrowser(this.platformId) && this.btnMicrofono && this.recognition) {
-        if (this.btnMicrofono.classList.contains('escuchando')) {
-            // Si ya está escuchando (está rojo), lo detenemos.
-            this.recognition.stop();
-            // La clase 'escuchando' se quitará automáticamente en recognition.onend.
-            // Aquí puedes llamar a procesarConsulta con el último texto final si no lo haces en onresult
-            // O si quieres que la IA responda SOLO al detener.
-            // Para tu caso actual, la respuesta se da después de 3 segundos en procesarConsulta.
-        } else {
-            // Si no está escuchando (está verde), lo iniciamos.
-            this.recognition.start();
-            // La clase 'escuchando' se añadirá automáticamente en recognition.onstart.
-        }
+  procesarConsulta(consulta: string): void {
+    this.isProcessing = true;
+    this.avatarHablando();
+    
+    if (this.textoTranscripcion) {
+      this.textoTranscripcion.textContent = "Procesando tu pregunta...";
     }
+
+    this.webSocketService.send(consulta);
   }
 
-  // Métodos para controlar la animación del avatar
   avatarHablando(): void {
     if (this.avatar) this.avatar.classList.remove('listening');
     if (this.mouth) {
@@ -181,42 +246,16 @@ export class AvatarComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Lógica para procesar la consulta de voz
-  // NOTA: Con recognition.continuous = true, procesarConsulta se llamará
-  // cuando finalTranscript tenga contenido (en onresult).
-  // Si quieres que se procese SOLO cuando el usuario presiona para DETENER,
-  // la lógica de `onresult` debería almacenar el `finalTranscript` y
-  // `procesarConsulta` se llamaría dentro de `toggleMicrophone` cuando se detiene el micro,
-  // o dentro de `onend`. Por ahora, lo dejaremos como está, procesando cada frase final.
-  procesarConsulta(consulta: string): void {
-    this.avatarHablando(); // El avatar "habla" mientras procesa
-
-    const consultaLower = consulta.toLowerCase();
-    let recomendacion = "";
-
-    if (consultaLower.includes('matemáticas') || consultaLower.includes('números') || consultaLower.includes('software')) {
-      recomendacion = "Ingeniería de Software, Matemáticas o Física";
-    } else if (consultaLower.includes('medicina') || consultaLower.includes('salud') || consultaLower.includes('enfermería')) {
-      recomendacion = "Medicina, Enfermería o Biología";
-    } else if (consultaLower.includes('derecho') || consultaLower.includes('leyes') || consultaLower.includes('legal')) {
-      recomendacion = "Derecho, Ciencias Políticas o Relaciones Internacionales";
-    } else if (consultaLower.includes('industrial') || consultaLower.includes('procesos') || consultaLower.includes('producción')) {
-      recomendacion = "Ingeniería Industrial, Administración o Logística";
-    }
-    else {
-      recomendacion = "explorar todas nuestras carreras universitarias";
-    }
-
-    setTimeout(() => {
-      if (this.textoTranscripcion) {
-        this.textoTranscripcion.innerHTML += `<br><br><strong>Recomendación:</strong> Te sugerimos ${recomendacion}.`;
-      }
-      this.avatarReposo(); // El avatar vuelve a reposo después de responder
-    }, 3000); // Simula un tiempo de respuesta de la IA
-  }
-
-  // Función para navegar de vuelta a la página de inicio
   goToHome(): void {
     this.router.navigate(['/home']);
+  }
+
+  ngOnDestroy(): void {
+    if (this.messageSubscription) this.messageSubscription.unsubscribe();
+    if (this.statusSubscription) this.statusSubscription.unsubscribe();
+    if (this.mediaRecorder && this.isRecording) {
+      this.stopRecording();
+    }
+    this.webSocketService.disconnect();
   }
 }
