@@ -11,13 +11,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/voice-ws")
-                .setAllowedOriginPatterns("*")
+                .setAllowedOriginPatterns("http://localhost:4200")
                 .withSockJS();  // Opcional: Si usas SockJS en el cliente
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");  // Para respuestas
+        registry.enableSimpleBroker("/queue");  // Para respuestas
         registry.setApplicationDestinationPrefixes("/app");  // Para enviar prompts
     }
 
