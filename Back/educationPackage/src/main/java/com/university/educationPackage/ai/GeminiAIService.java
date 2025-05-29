@@ -28,7 +28,13 @@ public class GeminiAIService {
         this.model = new GenerativeModel("gemini-pro", vertexAI);
     }
 
-    public String generateAdmissionResponse(String question, Program program) {
+  public GeminiAIService(GenerativeModel model, AdmissionPromptFactory promptFactory) {
+
+    this.model = model;
+    this.promptFactory = promptFactory;
+  }
+
+  public String generateAdmissionResponse(String question, Program program) {
         String prompt = promptFactory.createPrompt(question, program);
         return processGeminiResponse(prompt);
     }

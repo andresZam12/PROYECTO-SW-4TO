@@ -1,5 +1,6 @@
 package com.university.educationPackage.controllers;
 
+import com.university.educationPackage.ai.GeminiAIService;
 import com.university.educationPackage.services.voice.SpeechToTextService;
 import com.university.educationPackage.services.voice.TextToSpeechService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,13 @@ import java.io.IOException;
 @Controller
 public class VoiceController {
 
+
     private final SpeechToTextService sttService;
     private final TextToSpeechService ttsService;
     private static final int MAX_AUDIO_SIZE_MB = 2; // 2MB para WebM/Opus
+
+  @Autowired
+  private GeminiAIService geminiService;
 
     @Autowired
     public VoiceController(SpeechToTextService sttService,
@@ -71,9 +76,10 @@ public class VoiceController {
     }
 
     private String generateAIResponse(String userQuestion) throws Exception {
-        // TODO: Integrar con tu servicio de IA
-        return "Respuesta generada para: " + userQuestion;
+        return geminiService.generateResponse(userQuestion);
     }
+
+
 
     private byte[] convertTextToSpeech(String text) throws Exception {
         return ttsService.convertTextToSpeech(text);

@@ -12,8 +12,7 @@
     box-sizing: border-box;
 }
 
-.contenedor-voz h1 {
-    font-size: 2.2em;
+.contenedor-voz h1 {    font-size: 2.2em;
     color: #2c3e50;
     margin-bottom: 10px;
 }
@@ -329,4 +328,47 @@
     .btn-pregunta {
         font-size: 0.95em;
     }
+}
+
+/* Indicador de grabación */
+.recording-indicator {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #f44336;
+  font-size: 0.8em;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Estado de conexión */
+.estado-conexion {
+  margin: 10px 0;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.estado-conexion .conectado {
+  color: #4CAF50;
+}
+
+.estado-conexion .desconectado {
+  color: #f44336;
+}
+
+/* Mejoras para el área de transcripción */
+.respuesta-ia {
+  min-height: 100px;
+  transition: all 0.3s ease;
+}
+
+.respuesta-ia.procesando {
+  border-left-color: #FFC107;
+  background-color: #fff9e6;
 }

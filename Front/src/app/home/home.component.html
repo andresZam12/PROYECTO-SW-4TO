@@ -25,6 +25,11 @@
             </p>
             <p>Explora con Confianza. Decide con Inteligencia</p>
            <button (click)="navigateToAvatar()">COMIENZA AHORA</button>
+           <div class="voice-interface">
+            <button id="recordButton" class="voice-button">Hablar con Elliot</button>
+            <div id="voiceStatus" class="voice-status">Presiona el botón para hablar</div>
+            <audio id="responseAudio" hidden></audio>
+          </div>
         </div>
         <div class="img"></div>
     </div>
