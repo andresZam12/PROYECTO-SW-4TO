@@ -1,5 +1,20 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
+# Sistema
+.DS_Store
+.idea/
+*.zip
+
+# Node.js (Angular)
+node_modules/
+dist/
+.env
+
+# Java (Maven)
+target/
+*.log
+*.class 
+
 # Compiled output
 /dist
 /tmp
